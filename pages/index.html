@@ -5,6 +5,51 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pishon Shop Website</title>
     <link rel="stylesheet" type="text/css" href="/pj/css/style.css">
+
+    <!-- Adding some basic styling for modals -->
+    <style>
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 1; 
+            left: 0;
+            top: 0;
+            width: 100%; 
+            height: 100%; 
+            overflow: auto; 
+            background-color: rgb(0,0,0); 
+            background-color: rgba(0,0,0,0.4); 
+            padding-top: 60px;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 400px;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .btn {
+            cursor: pointer;
+            padding: 10px 20px;
+            background-color: #333;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+    </style>
 </head>
 <body>
     <div class="header">
@@ -22,6 +67,8 @@
                         <li><a href="#">Contact</a></li>
                         <li><a href="#">Cart</a></li>
                         <li><a href="#">Checkout</a></li>
+                        <li><a href="#" id="loginBtn">Login</a></li>
+                        <li><a href="#" id="registerBtn">Register</a></li>
                     </ul>
                 </nav>
             </div>
@@ -38,6 +85,39 @@
         </div>
     </div>
 
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeLogin">&times;</span>
+            <h2>Login</h2>
+            <form action="/login" method="POST">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required><br><br>
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required><br><br>
+                <button type="submit" class="btn">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Registration Modal -->
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeRegister">&times;</span>
+            <h2>Register</h2>
+            <form action="/register" method="POST">
+                <label for="regUsername">Username</label>
+                <input type="text" id="regUsername" name="regUsername" required><br><br>
+                <label for="regEmail">Email</label>
+                <input type="email" id="regEmail" name="regEmail" required><br><br>
+                <label for="regPassword">Password</label>
+                <input type="password" id="regPassword" name="regPassword" required><br><br>
+                <button type="submit" class="btn">Register</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Rest of the page content remains unchanged -->
     <div class="categories">
         <div class="small-container">
             <div class="row">
@@ -151,5 +231,45 @@
             </div>
         </div>
     </div>
+
+    <!-- Adding JavaScript for modal functionality -->
+    <script>
+        // Get the modals
+        var loginModal = document.getElementById("loginModal");
+        var registerModal = document.getElementById("registerModal");
+
+        // Get the buttons that open the modals
+        var loginBtn = document.getElementById("loginBtn");
+        var registerBtn = document.getElementById("registerBtn");
+
+        // Get the <span> elements that close the modals
+        var closeLogin = document.getElementById("closeLogin");
+        var closeRegister = document.getElementById("closeRegister");
+
+        // When the user clicks the button, open the modal
+        loginBtn.onclick = function() {
+            loginModal.style.display = "block";
+        }
+        registerBtn.onclick = function() {
+            registerModal.style.display = "block";
+        }
+
+        // When the user clicks on <span> (x), close the modal
+        closeLogin.onclick = function() {
+            loginModal.style.display = "none";
+        }
+        closeRegister.onclick = function() {
+            registerModal.style.display = "none";
+        }
+
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function(event) {
+            if (event.target == loginModal) {
+                loginModal.style.display = "none";
+            } else if (event.target == registerModal) {
+                registerModal.style.display = "none";
+            }
+        }
+    </script>
 </body>
 </html>
