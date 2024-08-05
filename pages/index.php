@@ -1,3 +1,49 @@
+<?php
+session_start();
+
+$conn = new mysqli('localhost', 'root', '', 'pishon_shop');
+
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+// Handle registration
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['register'])) {
+    $username = $conn->real_escape_string($_POST['regUsername']);
+    $email = $conn->real_escape_string($_POST['regEmail']);
+    $password = password_hash($_POST['regPassword'], PASSWORD_BCRYPT);
+
+    $sql = "INSERT INTO users (username, email, password) VALUES ('$username', '$email', '$password')";
+
+    if ($conn->query($sql) === TRUE) {
+        echo "Registration successful!";
+    } else {
+        echo "Error: " . $sql . "<br>" . $conn->error;
+    }
+}
+
+// Handle login
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['login'])) {
+    $username = $conn->real_escape_string($_POST['username']);
+    $password = $_POST['password'];
+
+    $sql = "SELECT * FROM users WHERE username='$username'";
+    $result = $conn->query($sql);
+
+    if ($result->num_rows > 0) {
+        $user = $result->fetch_assoc();
+        if (password_verify($password, $user['password'])) {
+            $_SESSION['username'] = $user['username'];
+            echo "Login successful!";
+        } else {
+            echo "Invalid password!";
+        }
+    } else {
+        echo "No user found with that username!";
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,7 +52,6 @@
     <title>Pishon Shop Website</title>
     <link rel="stylesheet" type="text/css" href="/pj/css/style.css">
 
-    <!-- Adding some basic styling for modals -->
     <style>
         .modal {
             display: none; 
@@ -67,8 +112,13 @@
                         <li><a href="#">Contact</a></li>
                         <li><a href="#">Cart</a></li>
                         <li><a href="#">Checkout</a></li>
-                        <li><a href="#" id="loginBtn">Login</a></li>
-                        <li><a href="#" id="registerBtn">Register</a></li>
+                        <?php if (isset($_SESSION['username'])): ?>
+                            <li><a href="#">Welcome, <?php echo $_SESSION['username']; ?></a></li>
+                            <li><a href="logout.php">Logout</a></li>
+                        <?php else: ?>
+                            <li><a href="#" id="loginBtn">Login</a></li>
+                            <li><a href="#" id="registerBtn">Register</a></li>
+                        <?php endif; ?>
                     </ul>
                 </nav>
             </div>
@@ -90,12 +140,12 @@
         <div class="modal-content">
             <span class="close" id="closeLogin">&times;</span>
             <h2>Login</h2>
-            <form action="/login" method="POST">
+            <form action="index.php" method="POST">
                 <label for="username">Username</label>
                 <input type="text" id="username" name="username" required><br><br>
                 <label for="password">Password</label>
                 <input type="password" id="password" name="password" required><br><br>
-                <button type="submit" class="btn">Login</button>
+                <button type="submit" class="btn" name="login">Login</button>
             </form>
         </div>
     </div>
@@ -105,19 +155,18 @@
         <div class="modal-content">
             <span class="close" id="closeRegister">&times;</span>
             <h2>Register</h2>
-            <form action="/register" method="POST">
+            <form action="index.php" method="POST">
                 <label for="regUsername">Username</label>
                 <input type="text" id="regUsername" name="regUsername" required><br><br>
                 <label for="regEmail">Email</label>
                 <input type="email" id="regEmail" name="regEmail" required><br><br>
                 <label for="regPassword">Password</label>
                 <input type="password" id="regPassword" name="regPassword" required><br><br>
-                <button type="submit" class="btn">Register</button>
+                <button type="submit" class="btn" name="register">Register</button>
             </form>
         </div>
     </div>
 
-    <!-- Rest of the page content remains unchanged -->
     <div class="categories">
         <div class="small-container">
             <div class="row">
